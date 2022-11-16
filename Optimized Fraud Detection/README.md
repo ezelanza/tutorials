@@ -32,7 +32,7 @@ outputDict={"Pandas":pandas_time,"Modin":modin_time}
 plotter(outputDict)
 ```
 
-![Pandas](https://github.com/ezelanza/tutorials/tree/main/Optimized%20Fraud%20Detection/Images/features.png)
+![feature](https://user-images.githubusercontent.com/40643766/202277132-96cde020-a402-4a2b-bc6e-feb01985f3c4.png)
 
 ###Dealing with missing values
 
