@@ -1,5 +1,5 @@
 # Table of Contents
-1. [Section 1 : Pre-process](#Section1)
+1. [Section 1 : Pre-process](#id-section1)
 2. [Example2](#example2)
 3. [Third Example](#third-example)
 4. [Fourth Example](#fourth-examplehttpwwwfourthexamplecom)
@@ -20,9 +20,8 @@ Note: [Modin](https://modin.readthedocs.io/en/stable/) does not currently suppor
 <img src="https://www.intel.com/content/dam/develop/public/us/en/images/diagrams-infographics/diagram-modin-arch-16x9.jpg.rendition.intel.web.1072.603.jpg"
      alt="Markdown Monster icon"
      style="float: left; margin-right: 10px;" />
-
-## Section1
-## Pre-process and Initial Data Analysis
+<div id='id-section1'/>
+## Section 1 : Pre-process and Initial Data Analysis
 
 The first step is to pre-process the data. After you download and extract the data, you’ll have it in spreadsheet format. That means you’ll work with tabular data where each row is a transaction (example) and each column is a feature (transaction amount, credit limit, age.) In this tutorial you won’t know which represents each feature, since the data has been anonymized for privacy purposes. This example uses supervised learning, meaning the algorithm is trained on a pre-defined set of examples. The examples are labeled with one column called LABEL (FRAUD or NOT FRAUD) 
 
