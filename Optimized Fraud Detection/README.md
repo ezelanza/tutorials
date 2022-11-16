@@ -1,3 +1,9 @@
+#Index
+### Part 1.....
+
+
+## This is the code for the publications done 
+
 ## Use case - Fraud detection with [Intel® Distribution of Modin](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-of-modin.html#gs.7hvt6) 
 
 
@@ -17,6 +23,12 @@ Note: [Modin](https://modin.readthedocs.io/en/stable/) does not currently suppor
 
 The first step is to pre-process the data. After you download and extract the data, you’ll have it in spreadsheet format. That means you’ll work with tabular data where each row is a transaction (example) and each column is a feature (transaction amount, credit limit, age.) In this tutorial you won’t know which represents each feature, since the data has been anonymized for privacy purposes. This example uses supervised learning, meaning the algorithm is trained on a pre-defined set of examples. The examples are labeled with one column called LABEL (FRAUD or NOT FRAUD) 
 
+![feature](https://user-images.githubusercontent.com/40643766/202277132-96cde020-a402-4a2b-bc6e-feb01985f3c4.png)
+
+In a real-world case, the data could come from multiple sources (such as SQL, Oracle Database* or Apache Spark*.) The idea is to have one spreadsheet file to put in the algorithm to train it. To do that, you need to concatenate or join multiple files to get one main dataset. Joining multiple sources can result in a main dataset with thousands of lines and hundreds of columns. Working with such a large file can strain on your computer/server for memory and processing, so it’s important to use optimized frameworks to speed up this task.
+
+First, load the dataset. You’ll use both regular pandas and optimized Modin-Pandas (pd). By using both, you’ll see the difference when your device uses all of its cores instead of using just one core. This will demonstrate how Modin can help.
+
 ```
 t0 = time.time()
 pandas_df = pandas.read_csv("creditcard.csv")
@@ -32,7 +44,6 @@ outputDict={"Pandas":pandas_time,"Modin":modin_time}
 plotter(outputDict)
 ```
 
-![feature](https://user-images.githubusercontent.com/40643766/202277132-96cde020-a402-4a2b-bc6e-feb01985f3c4.png)
 
 ###Dealing with missing values
 
@@ -48,6 +59,7 @@ t1 = time.time()
 print(modin_df.columns[modin_df.isna().any()])
 modin_time = time.time() - t1
 ```
+
 ![na](/Users/emlanza/Library/CloudStorage/OneDrive-IntelCorporation/Technical/S2E/Content/Images/na.png)
 
 **Modin benefit XXX**
