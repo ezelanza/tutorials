@@ -49,11 +49,20 @@ plotter(outputDict)
     Modin was 1.72X faster than stock pandas!
 ![compare](README_files/Main_16_1.png)
 
+Now that the dataset is loaded on your memory, take a closer look.
 
-### Dealing with missing values
+### Check for missing values
 
-One of the first steps when analyzing the data is "Missing values". Sometimes the data that we have available is extracted from other sources which could imply that a system can fail to report data in a particular time what would be a missing value in our dataset, is nobody fault it's just that we are working with machines and sometimes they could fail ;). When we face an scenario like this is important to know what to do with missing values (OTHER TUTORIAL).
-Let's see then if we have missing values in our data. 
+One of the first steps in data analysis is to check for missing values, because most algorithms can’t handle missing data. This verification is a useful shorthand to see if the data is accurate. It’s important to know how large the problem is to determine how to handle it. For example, 80% missing values is evidence of a bad dataset, but not a problem when that number is closer to 5%.
+
+![missing](README_files/missing.png)
+
+There are multiple ways to address this problem. There are no good or bad decisions, try them out and see how the algorithm performs with each.  
+
+Remove the lines with missing values. If there aren’t very many missing values, a smaller dataset won’t be an issue. 
+Impute value. Simulate a value to fill in the missing field. The idea is to use the example (line) but reduce the effect of missing values. Try replacing with the mean/maximum/minimum value of the feature (column.) You can also impute based on K-means, which will predict the value with an eye to the other values (columns.)  
+When you’re working with data extracted from outside sources, it’s worth factoring in system failures. These failures take the form of incomplete reporting – taking only partial snapshots of the dataset – and can result in missing values.  
+Let's check for missing values:  
 
 ```
 t0 = time.time()
