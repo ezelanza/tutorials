@@ -4,12 +4,6 @@
 3. [Third Example](#third-example)
 4. [Fourth Example](#fourth-examplehttpwwwfourthexamplecom)
 
-
-## Example
-## Example 2
-## Third Example
-## [Fourth Example](http://www.fourthexample.com) 
-
 ## This is the code for the publications done on 
 
 ## Use case - Fraud detection with [Intel® Distribution of Modin](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-of-modin.html#gs.7hvt6) +  [Intel® Extension for scikit-learn] (https://www.intel.com/content/www/us/en/developer/tools/oneapi/scikit-learn.html#gs.iezgox)
