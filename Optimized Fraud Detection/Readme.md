@@ -44,7 +44,9 @@ outputDict={"Pandas":pandas_time,"Modin":modin_time}
 plotter(outputDict)
 ```
 
-
+    Pandas Time(seconds): 0.904883861541748 
+    Modin Time(seconds): 0.5271012783050537
+    Modin was 1.72X faster than stock pandas!
 ![compare](README_files/Main_16_1.png)
 
 
