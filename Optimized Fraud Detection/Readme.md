@@ -751,3 +751,14 @@ print('Frauds', round(X_train['Class'].value_counts()[1]/len(X_train) * 100,2), 
 ```
     No Frauds 57.98 % of the dataset
     Frauds 42.02 % of the dataset
+    
+    
+### Feature engineering 
+ 
+ Lastly, there’s another important modification to make to your dataset. [Feature engineering](https://en.wikipedia.org/wiki/Feature_engineering) (FE) or means adding features that are not present and to help the algorithm detect patterns in data. Data scientists [call it](https://www.worldcat.org/title/1149291643) an art because you need to figure out which feature can be added to help and it involves deep understanding of the data. It’s a process of trial and error; don’t worry if that new feature doesn’t work when you test the results.  Auto machine learning ([AutoML](https://en.wikipedia.org/wiki/Automated_machine_learning)) [tools](https://github.com/epistasislab/tpot) can help. They automatically test parameters so you can find “optimal” feature combinations that can also be used during training.  
+
+For example, if you know the description of each feature, suppose there are two features called “amount” and “age.” You could create a new feature called “amount spent by age,” then create a function that splits age ranges and hashes them based on the amount spent. In some cases, it can also just be a categorical value. Here, the data is anonymized so adding features is tricky, but it’s important to be aware of FE. 
+
+In this part, we highlighted the most important preprocessing techniques to use on a tabular data problem such as our fraud detection case.  
+
+Now your data is ready to be used to train a model (Part three.) The preprocessing and training stages are an [iterative process](https://en.wikipedia.org/wiki/Iterative_method) in which transformations performed may or may not help teach the algorithm. Remember that your goal is to have an algorithm that can work well on unseen data in the very last stage. You might have to repeat or modify this process several times to get there. 
