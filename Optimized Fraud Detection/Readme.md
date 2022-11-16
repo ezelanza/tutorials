@@ -47,7 +47,7 @@ plotter(outputDict)
 ![compare](tutorials/Optimized Fraud Detection/README_files/Main_16_1.png)
 
 
-###Dealing with missing values
+### Dealing with missing values
 
 One of the first steps when analyzing the data is "Missing values". Sometimes the data that we have available is extracted from other sources which could imply that a system can fail to report data in a particular time what would be a missing value in our dataset, is nobody fault it's just that we are working with machines and sometimes they could fail ;). When we face an scenario like this is important to know what to do with missing values (OTHER TUTORIAL).
 Let's see then if we have missing values in our data. 
