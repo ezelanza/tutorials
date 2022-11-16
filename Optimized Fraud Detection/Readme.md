@@ -4,7 +4,7 @@
 
 ## This is the code for the publications done 
 
-## Use case - Fraud detection with [Intel® Distribution of Modin](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-of-modin.html#gs.7hvt6) 
+## Use case - Fraud detection with [Intel® Distribution of Modin](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-of-modin.html#gs.7hvt6) +  [Intel® Extension for scikit-learn] (https://www.intel.com/content/www/us/en/developer/tools/oneapi/scikit-learn.html#gs.iezgox)
 
 
 This tutorial provides a use case where a credit card company might benefit from machine learning techniques to predict fraudulent transactions. This is the first part of a three-part series.
@@ -65,113 +65,633 @@ When you’re working with data extracted from outside sources, it’s worth fac
 Let's check for missing values:  
 
 ```
-t0 = time.time()
-print(pandas_df.columns[pandas_df.isna().any()])
-pandas_time = time.time()- t0
+t0 = time.time() 
 
-t1 = time.time()
-print(modin_df.columns[modin_df.isna().any()])
-modin_time = time.time() - t1
+print(pandas_df.columns[pandas_df.isna().any()]) 
+
+pandas_time = time.time()- t0 
+
+ 
+
+t1 = time.time() 
+
+print(modin_df.columns[modin_df.isna().any()]) 
+
+modin_time = time.time() - t1 
+
+Index([], dtype='object')  
+
+Index([], dtype='object') 
 ```
 
-![na](/Users/emlanza/Library/CloudStorage/OneDrive-IntelCorporation/Technical/S2E/Content/Images/na.png)
+Fortunately, in this example there are no missing values, so you can move on to sub-sampling. 
 
-**Modin benefit XXX**
+### Subsampling
 
-GREAT! No missing values so let's move to the next part.
-
-###Subsampling
-
-In the next part we will just use modin_df in the following examples to avoid duplicated (full code is available HERE). 
-
-Let's now take a look of the distribution of our data.
+Take a look at the distribution of your data. 
 
 ```
-sub_sample_plot=sns.countplot(pandas_df["Class"])
-sub_sample_plot
+sub_sample_plot=sns.countplot(pandas_df["Class"]) 
+
+sub_sample_plot 
 ```
 
-![Image](/Users/emlanza/Library/CloudStorage/OneDrive-IntelCorporation/Technical/S2E/Content/Images/distribution.png)
+![missing](README_files/Class_unbalanced.png)
 
-As we can see the class (FRAUD or NO FRAUD) is very UNBALANCED. What means that most cases aren't fraud and just a few are FRAUD. If we would like to train a model with the entire data that we have, the model will learn to detect the majority of the cases (NO FRAUD),which is not what we want, WE WANT TO DETECT FRAUD! If a model is trained with this data it would be able to get high levels of accuracy, but this is not the
+It’s clear that the class (FRAUD or NO FRAUD) is very unbalanced. That means that most cases aren't fraud and just a few are FRAUD.
 
-There are some techniques to help us on that.
+To train a model with the entire dataset, the model should learn how to detect the majority of cases (NO FRAUD), which is not what we want: We want to detect fraud.
 
-1. Get more FRAUD examples : We should ask to the person whi provide us the dataset to get more examples. It could be applicable in some scenarios but in most of them we have to do what we can with the data we have.
-2. Augment FRAUD examples : If there are examples of the class that we want to detect, we could use an algorithm to create sintetic data to get a considerable ammout of examples of the desired class. This technique is used manly in computer vision scenarios but it could be used in any other scenarios.(Will be explanied in other tutorial)
-3. Get a new dataset where the ratio fraud vs non-fraud could be close to 1:1
+If a model is trained with this data, it would reach high levels of accuracy, but that’s not the outcome you want. (Part three of this tutorial explains how to select a metric based on the criteria you’re seeking.)
 
-Let's try then to create a new data set with a ratio that could be useful to make the algorithm able to generalize both classes.
+Here are some ways to solve this problem: 
 
-It's always a good idea to normalize the data to reduce some effect that an outlier or the variance of the data could cause. There are different alternatives to normalize (the idea is to have the data represented in values from 0 an 1, or -1 and 1 depending on data). Sklearn give us a tool a normalize it easily.
-In this part the features "Time" and "Amount", need to be normalized becuase their values are completly different to other features and it can affect the model (We'll go deep in part 2 of the tutorial)
+1. Obtain more FRAUD examples. Ask the dataset owner for more examples. Usually, however, you need to work with the dataset you have.
 
-```
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import RobustScaler
-%time
-scaler = StandardScaler()
-robust = RobustScaler()
-scaled_time=robust.fit_transform(modin_df["Time"].values.reshape(-1,1))
-scaled_amount=robust.fit_transform(modin_df["Amount"].values.reshape(-1,1))
+2. Increase FRAUD examples: If there are examples of the class you want to detect, use an algorithm to generate a considerable number of examples of the desired class. This solution is used mainly in computer vision scenarios but works for others as well.
+
+3. Use a different dataset where the ratio of FRAUD to NO FRAUD is close to 1:1. 
+
+Now you’re ready to create a new dataset with a useful ratio for generalizing both classes. 
+
+First, create a NEW balanced dataset.  
 
 ```
-BEFORE
+modin_df_sub = modin_df.sample(frac=1)  #Shuffling the dataframe 
 
-![normal](/Users/emlanza/Library/CloudStorage/OneDrive-IntelCorporation/Technical/S2E/Content/Images/normal.png)
+ 
 
-AFTER
+modin_df_sub_nf = modin_df_sub.loc[modin_df["Class"] == 0][:492] 
 
-![scaled](/Users/emlanza/Library/CloudStorage/OneDrive-IntelCorporation/Technical/S2E/Content/Images/scaled.png)
+modin_df_sub_f = modin_df_sub.loc[modin_df["Class"]==1] 
 
-**MODIN Benefit xxx**
+ 
 
-Let's now create the NEW balanced dataset. 
+# Will reuse all fraud points, will random sample out 492 non-fraud points 
+
+ 
+
+# New sample Table 
+
+modin_df_sub_distributed = pd.concat([modin_df_sub_nf,modin_df_sub_f]) 
+
+modin_balanced = modin_df_sub_distributed.sample(frac=1, random_state=42) 
 
 ```
-modin_df1_scaled = modin_df1_scaled.sample(frac=1)  #Shuffling the dataframe
+The resulting balanced dataset makes it easier to train the algorithm. 
 
-modin_df1_scaled_nf = modin_df1_scaled.loc[modin_df["Class"] == 0][:500]
-modin_df1_scaled_f = modin_df1_scaled.loc[modin_df["Class"]==1]
+```
+sub_sample_plot=sns.countplot(modin_balanced["Class"]) 
 
-# Will reuse all fraud points, will random sample out 500 non-fraud points
-
-# New sample Table
-modin_df1_distributed = pd.concat([modin_df1_scaled_nf,modin_df1_scaled_f])
-modin_df2 = modin_df1_distributed.sample(frac=1, random_state=42)
-
-modin_df2.head()
+sub_sample_plot 
 ```
 
 
-We can see now that the dataset is now balanced and it will help us to train our algorithm better.
+Now you have the data necessary to demonstrate a fair representation of FRAUD and NO FRAUD examples. It should also be clear what advantages the Intel® Distribution of Modin provides — with no code changes. 
 
+## Section 2 : Data transformation
+
+For this tutorial, you’ll need scikit-learn* ([sklearn](https://scikit-learn.org/stable)) It’s a very useful and robust libraries for machine learning in [Python](https://www.python.org/). It provides a selection of efficient tools for machine learning and statistical modeling including classification, regression, clustering, and dimensionality reduction through a consistent interface in Python. This library, which is largely written in Python, is built on [NumPy](https://numpy.org/), [SciPy](https://scipy.org/) and [Matplotlib](https://matplotlib.org/).  
+
+The Intel® Extension for scikit-learn offers you a way to accelerate existing scikit-learn code. The acceleration is achieved through patching: replacing the stock scikit-learn algorithms with their optimized versions provided by the extension (see the [guide](https://www.intel.com/content/www/us/en/developer/tools/oneapi/scikit-learn.html#gs.8yoqc6) That means you don’t need to learn a new library but still get the benefits of using scikit, optimized.  
+The example below will show the benefits.
+
+### Split Data
+
+A common mistake is to perform all the preprocessing transformations on the data before performing the separation between train/test/valid sub-samples. In a real-word case, the data you’ll have available is the training data while test data will be what you’re going to predict. Making the transformation before splitting means that you’ll be transforming the training data with information present in the test dataset, meaning there will be contaminated data and the results will be biased.  
+
+How can you avoid it? Simple: by splitting the data. There are [multiple ways](https://towardsdatascience.com/how-to-select-a-data-splitting-method-4cf6bc6991da) to do it -- randomly, weighted, among others. Here, you’ll divide it randomly, but with balanced examples of both classes (50/50 if possible.)  It’s good practice to divide in a 80/20 ratio, meaning that 80% of our data will be used to train the model (there’s a validation dataset which could be the 20% of the train data, this is useful when training the model to see how it’s performing), and 20% will be used to verify how the model performs with data the model has never seen before.  
+
+![missing](README_files/split.png)
+
+In short, we could use the whole dataset to visualize it, but it needs to be split up as soon as you start working on transformations.
+
+### Transformations 
+Now you’ll modify the data to make it easier for the algorithm to detect its behavior. These are the most common transformations, and even so they require patience. After training the model you’ll find out if these transformations were useful or not. You can train a model without any transformation, but it’s highly recommended to transform the data first. 
+
+A transformation can be understood as a modification of the data without changing its patterns. For example, if you have a feature called “age” represented in values between 0 and 100, it might be represented in groups such as young (0), adult (1), senior (2.)
+
+### Scaling
+It's always a good idea to scale the data to reduce the effect of data represented in value ranges. The model might skew towards those features with bigger numbers, for example if “customer seniority” is represented from 0-20 and the “transaction amount” is between 1,000 and 10,000,000, the model might weight the “transaction amount” more than customer seniority. Which might be true, but you’ll be biased if the model is trained with data in this format. 
+
+```python
+X_train.describe()
 ```
-sub_sample_plot=sns.countplot(df2["Class"])
-sub_sample_plot
 
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Time</th>
+      <th>V1</th>
+      <th>V2</th>
+      <th>V3</th>
+      <th>V4</th>
+      <th>V5</th>
+      <th>V6</th>
+      <th>V7</th>
+      <th>V8</th>
+      <th>V9</th>
+      <th>...</th>
+      <th>V20</th>
+      <th>V21</th>
+      <th>V22</th>
+      <th>V23</th>
+      <th>V24</th>
+      <th>V25</th>
+      <th>V26</th>
+      <th>V27</th>
+      <th>V28</th>
+      <th>Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>...</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+      <td>787.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>87308.590851</td>
+      <td>-2.291426</td>
+      <td>1.791328</td>
+      <td>-3.356106</td>
+      <td>2.292644</td>
+      <td>-1.502895</td>
+      <td>-0.697463</td>
+      <td>-2.688407</td>
+      <td>0.243095</td>
+      <td>-1.312837</td>
+      <td>...</td>
+      <td>0.181585</td>
+      <td>0.405502</td>
+      <td>-0.017708</td>
+      <td>-0.002603</td>
+      <td>-0.029157</td>
+      <td>0.007357</td>
+      <td>0.014952</td>
+      <td>0.081577</td>
+      <td>0.043965</td>
+      <td>103.586557</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>48151.376393</td>
+      <td>5.316830</td>
+      <td>3.568666</td>
+      <td>5.987156</td>
+      <td>3.140819</td>
+      <td>4.094094</td>
+      <td>1.719691</td>
+      <td>5.672757</td>
+      <td>4.948775</td>
+      <td>2.254574</td>
+      <td>...</td>
+      <td>0.998783</td>
+      <td>2.924874</td>
+      <td>1.201339</td>
+      <td>1.240150</td>
+      <td>0.541629</td>
+      <td>0.666629</td>
+      <td>0.466151</td>
+      <td>0.971632</td>
+      <td>0.405105</td>
+      <td>220.644740</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>260.000000</td>
+      <td>-29.876366</td>
+      <td>-8.402154</td>
+      <td>-30.558697</td>
+      <td>-3.722507</td>
+      <td>-21.665654</td>
+      <td>-6.406267</td>
+      <td>-41.506796</td>
+      <td>-38.987263</td>
+      <td>-13.434066</td>
+      <td>...</td>
+      <td>-3.493050</td>
+      <td>-21.453736</td>
+      <td>-8.887017</td>
+      <td>-19.254328</td>
+      <td>-2.307453</td>
+      <td>-4.781606</td>
+      <td>-1.152671</td>
+      <td>-7.263482</td>
+      <td>-1.796363</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>45177.000000</td>
+      <td>-2.789009</td>
+      <td>-0.179972</td>
+      <td>-5.093864</td>
+      <td>-0.062235</td>
+      <td>-1.741748</td>
+      <td>-1.539372</td>
+      <td>-2.987206</td>
+      <td>-0.200752</td>
+      <td>-2.257326</td>
+      <td>...</td>
+      <td>-0.183045</td>
+      <td>-0.179189</td>
+      <td>-0.553819</td>
+      <td>-0.207802</td>
+      <td>-0.373465</td>
+      <td>-0.328255</td>
+      <td>-0.293797</td>
+      <td>-0.053358</td>
+      <td>-0.051515</td>
+      <td>1.520000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>79294.000000</td>
+      <td>-0.801931</td>
+      <td>0.984405</td>
+      <td>-1.188498</td>
+      <td>1.401166</td>
+      <td>-0.497317</td>
+      <td>-0.626831</td>
+      <td>-0.657817</td>
+      <td>0.154563</td>
+      <td>-0.765079</td>
+      <td>...</td>
+      <td>0.014441</td>
+      <td>0.148284</td>
+      <td>0.016430</td>
+      <td>-0.009364</td>
+      <td>0.011580</td>
+      <td>0.057425</td>
+      <td>-0.018519</td>
+      <td>0.050750</td>
+      <td>0.039347</td>
+      <td>20.000000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>135098.500000</td>
+      <td>1.074218</td>
+      <td>2.787293</td>
+      <td>0.350978</td>
+      <td>4.177147</td>
+      <td>0.447934</td>
+      <td>0.060591</td>
+      <td>0.251042</td>
+      <td>0.862115</td>
+      <td>0.123667</td>
+      <td>...</td>
+      <td>0.431632</td>
+      <td>0.643157</td>
+      <td>0.558279</td>
+      <td>0.200205</td>
+      <td>0.368764</td>
+      <td>0.371163</td>
+      <td>0.329961</td>
+      <td>0.423333</td>
+      <td>0.227508</td>
+      <td>99.990000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>171914.000000</td>
+      <td>2.338892</td>
+      <td>21.467203</td>
+      <td>3.453140</td>
+      <td>12.114672</td>
+      <td>11.095089</td>
+      <td>6.065901</td>
+      <td>5.802537</td>
+      <td>19.587773</td>
+      <td>3.353525</td>
+      <td>...</td>
+      <td>10.440718</td>
+      <td>27.202839</td>
+      <td>8.361985</td>
+      <td>5.303607</td>
+      <td>1.091435</td>
+      <td>2.156042</td>
+      <td>2.745261</td>
+      <td>3.052358</td>
+      <td>1.779364</td>
+      <td>2125.870000</td>
+    </tr>
+  </tbody>
+</table>
+<p>8 rows x 30 columns</p>
+</div>
+
+As you can see from the train data output, most of the features give us the impression that are “scaled” except for “time” and “amount,” which have larger numbers. Avoid using the data as it is now because the model would interpret “time” and “amount” as the two most important features. 
+
+If you plot amount and a feature (V1, orange), you'll notice that amount (blue) appears much lower and not centered at all. This happens because the values of V1 and amount are very different, and it will affect how our model can learn from those features. 
+    
+
+```python
+X_train['Amount'].plot(kind='kde',xlim=(100,100))
+X_train['V1'].plot(kind='kde',xlim=(-100,100))
+```
+    
+![png](README_files/Density_2.png)
+    
+Let’s scale the data now. The idea is to keep the same “smaller” distribution, representing the initial data between the same defined range to all features. 
+
+There are multiple tools and options to scale and you can do it manually, but scikit-learn* has an [API](https://scikit-learn.org/stable/modules/classes.html) to help with this task. It will depend on the data we have (here’s a good [guide](https://scikit-learn.org/stable/modules/preprocessing.html) to select useful calculations). 
+
+In our example we’ll scale the data, using the [StandardScale function](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html) (industry’s go-to algorithm), you can try others as [RobustScaler](http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.RobustScaler.html). StandardScaler means that each feature will have a mean of 0, and each value is divided by the standard deviation. Your goal is to try to center the distribution of the data to reduce the effect of variables that are in a different scale. Note that if our data has outliers (as explained below), we should try to reduce the effect by using other scalers like RobustScaler
+
+```python
+standard = StandardScaler()
+data_st = standard.fit_transform(X_train)
+
+# convert the array back to a dataframe
+dataset_std = DataFrame(data_st, columns=col_names)
+dataset_std.describe()
 ```
 
-![balanced](/Users/emlanza/Library/CloudStorage/OneDrive-IntelCorporation/Technical/S2E/Content/Images/balanced.png)
-
-
-##***2ND PART ANALYTICS OF DATA***.
-
-* Analsys of outliers
-* Normalization
-* Correlation of data
-
-##***3RD TRAINING***.
-
-* Sklearn intel optimized
-* Explanation about perfomance and metrics 
 
 
 
-**Let's go!**
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Time</th>
+      <th>V1</th>
+      <th>V2</th>
+      <th>V3</th>
+      <th>V4</th>
+      <th>V5</th>
+      <th>V6</th>
+      <th>V7</th>
+      <th>V8</th>
+      <th>V9</th>
+      <th>...</th>
+      <th>V20</th>
+      <th>V21</th>
+      <th>V22</th>
+      <th>V23</th>
+      <th>V24</th>
+      <th>V25</th>
+      <th>V26</th>
+      <th>V27</th>
+      <th>V28</th>
+      <th>Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>...</td>
+      <td>7.870000e+02</td>
+      <td>787.000000</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+      <td>7.870000e+02</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>-1.083420e-16</td>
+      <td>-4.965674e-17</td>
+      <td>4.062824e-16</td>
+      <td>-7.583938e-16</td>
+      <td>1.670272e-16</td>
+      <td>-1.128562e-16</td>
+      <td>-4.604534e-16</td>
+      <td>-2.708549e-16</td>
+      <td>3.159974e-17</td>
+      <td>4.694819e-16</td>
+      <td>...</td>
+      <td>1.512273e-16</td>
+      <td>0.000000</td>
+      <td>-4.514249e-18</td>
+      <td>1.579987e-17</td>
+      <td>-1.128562e-16</td>
+      <td>-3.159974e-17</td>
+      <td>-5.417098e-17</td>
+      <td>7.674223e-17</td>
+      <td>-1.354275e-17</td>
+      <td>3.114832e-16</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>...</td>
+      <td>1.000636e+00</td>
+      <td>1.000636</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+      <td>1.000636e+00</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>-1.808961e+00</td>
+      <td>-5.191530e+00</td>
+      <td>-2.858201e+00</td>
+      <td>-4.546381e+00</td>
+      <td>-1.916371e+00</td>
+      <td>-4.927972e+00</td>
+      <td>-3.321780e+00</td>
+      <td>-6.847301e+00</td>
+      <td>-7.932328e+00</td>
+      <td>-5.379703e+00</td>
+      <td>...</td>
+      <td>-3.681452e+00</td>
+      <td>-7.478317</td>
+      <td>-7.387548e+00</td>
+      <td>-1.553358e+01</td>
+      <td>-4.209053e+00</td>
+      <td>-7.188414e+00</td>
+      <td>-2.506412e+00</td>
+      <td>-7.564318e+00</td>
+      <td>-4.545735e+00</td>
+      <td>-4.697707e-01</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>-8.755385e-01</td>
+      <td>-9.364597e-02</td>
+      <td>-5.527424e-01</td>
+      <td>-2.904322e-01</td>
+      <td>-7.502424e-01</td>
+      <td>-5.837804e-02</td>
+      <td>-4.898809e-01</td>
+      <td>-5.270600e-02</td>
+      <td>-8.974526e-02</td>
+      <td>-4.191878e-01</td>
+      <td>...</td>
+      <td>-3.653061e-01</td>
+      <td>-0.200030</td>
+      <td>-4.465456e-01</td>
+      <td>-1.655682e-01</td>
+      <td>-6.360933e-01</td>
+      <td>-5.037666e-01</td>
+      <td>-6.627597e-01</td>
+      <td>-1.389628e-01</td>
+      <td>-2.358435e-01</td>
+      <td>-4.628774e-01</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>-1.665516e-01</td>
+      <td>2.803253e-01</td>
+      <td>-2.262569e-01</td>
+      <td>3.622733e-01</td>
+      <td>-2.840166e-01</td>
+      <td>2.457727e-01</td>
+      <td>4.109883e-02</td>
+      <td>3.581824e-01</td>
+      <td>-1.790102e-02</td>
+      <td>2.431085e-01</td>
+      <td>...</td>
+      <td>-1.674546e-01</td>
+      <td>-0.087997</td>
+      <td>2.843420e-02</td>
+      <td>-5.455208e-03</td>
+      <td>7.526083e-02</td>
+      <td>7.515340e-02</td>
+      <td>-7.184891e-02</td>
+      <td>-3.174745e-02</td>
+      <td>-1.140743e-02</td>
+      <td>-3.790696e-01</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>9.931243e-01</td>
+      <td>6.334197e-01</td>
+      <td>2.792637e-01</td>
+      <td>6.195667e-01</td>
+      <td>6.003854e-01</td>
+      <td>4.768012e-01</td>
+      <td>4.410889e-01</td>
+      <td>5.184990e-01</td>
+      <td>1.251651e-01</td>
+      <td>6.375565e-01</td>
+      <td>...</td>
+      <td>2.505104e-01</td>
+      <td>0.081305</td>
+      <td>4.797588e-01</td>
+      <td>1.636388e-01</td>
+      <td>7.351425e-01</td>
+      <td>5.460856e-01</td>
+      <td>6.761941e-01</td>
+      <td>3.519574e-01</td>
+      <td>4.533634e-01</td>
+      <td>-1.631058e-02</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>1.758189e+00</td>
+      <td>8.714332e-01</td>
+      <td>5.517016e+00</td>
+      <td>1.138032e+00</td>
+      <td>3.129207e+00</td>
+      <td>3.079068e+00</td>
+      <td>3.935397e+00</td>
+      <td>1.497745e+00</td>
+      <td>3.911469e+00</td>
+      <td>2.071048e+00</td>
+      <td>...</td>
+      <td>1.027816e+01</td>
+      <td>9.167702</td>
+      <td>6.979729e+00</td>
+      <td>4.281404e+00</td>
+      <td>2.070246e+00</td>
+      <td>3.225257e+00</td>
+      <td>5.860858e+00</td>
+      <td>3.059462e+00</td>
+      <td>4.286552e+00</td>
+      <td>9.171166e+00</td>
+    </tr>
+  </tbody>
+</table>
+<p>8 rows × 30 columns</p>
+</div>
+
+![png](README_files/normalized.png)
 
 
 
-## Comments
 
-GOAL : Show the benefit of using intel optimized toolkits with a very easy example (Not much technical details). The example can be a real case challenge for some developers like in this example is Fraud detection, future cases could be computer vision and NLP systems. A complete series of Hugging face algorithms could be also interesting.
+
