@@ -1,8 +1,8 @@
-#Index
+# Index
 ### Part 1.....
 
 
-## This is the code for the publications done 
+## This is the code for the publications done on 
 
 ## Use case - Fraud detection with [Intel® Distribution of Modin](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-of-modin.html#gs.7hvt6) +  [Intel® Extension for scikit-learn] (https://www.intel.com/content/www/us/en/developer/tools/oneapi/scikit-learn.html#gs.iezgox)
 
