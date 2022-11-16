@@ -666,7 +666,80 @@ dataset_std.describe()
 
 ![png](README_files/normalized.png)
 
+### Outliers
+Now that the data is almost ready to train our model, there’s another important thing to check. It’s well organized now but we can still find values in the features (columns) that can affect the model as it might be the presence of an outlier. 
 
+An outlier is a value whose distance from other values is abnormal (unusual.) For example, if most customer transactions (the mean) cluster around a value, let’s say $100. An outlier is a transaction of $1 million and using this value to train our model will have a negative effect because it misleads the training process resulting in longer training times, less accurate models, and ultimately poorer results. 
 
+Therefore, you need to know how to handle these values, whether they are mild or extreme. Outliers should be carefully investigated. They often contain valuable information about the process under investigation or the data gathering and recording process -- an error might add extra numbers and make the value appear as an outlier. Before considering removal, try to understand why they appeared and whether similar values are likely to continue to appear. Of course, outliers are often bad data points. 
 
+In this example, you’ll eliminate those values that are three times away from [interquartile range](https://en.wikipedia.org/wiki/Interquartile_range) (the difference between 25% and 75% of the data), which are called extreme outliers (1.5 of distance are regular outliers), since you are not able to understand the data (it’s anonymized, and we don’t know how the data was extracted.) To identify them, you can use two graphic techniques, [box plots](https://en.wikipedia.org/wiki/Box_plot) and [scatter plots](https://en.wikipedia.org/wiki/Scatter_plot).  
 
+Here’s an example, keeping in mind that in real-case scenario with more information about the features you could investigate further.
+
+```python
+# Example to plot the outliers for 1 feature. You'll be using V5 
+
+fig = plt.figure(figsize =(10,5))
+ 
+# Creating plot
+plt.boxplot(X_train['V1'].loc[X_train['Class'] == 1],whis=3)    # "whis" is to define the range of IQR
+ 
+# show plot
+plt.show()
+```
+![png](README_files/outliers.png)
+
+```python
+## # Example to plot the outliers for 1 feature
+
+# # V1
+v1_fraud = X_train['V1'].loc[X_train['Class'] == 1].values
+q25, q75 = np.percentile(v1_fraud, 25), np.percentile(v1_fraud, 75)
+print('Quartile 25: {} | Quartile 75: {}'.format(q25, q75))
+v1_iqr = q75 - q25
+print('iqr: {}'.format(v1_iqr))
+
+v1_cut_off = v1_iqr * 3
+v1_lower, v1_upper = q25 - v1_cut_off, q75 + v1_cut_off
+print('Cut Off: {}'.format(v1_cut_off))
+print('V5 Lower: {}'.format(v1_lower))
+print('V5 Upper: {}'.format(v1_upper))
+
+outliers = [x for x in v1_fraud if x < v1_lower or x > v1_upper]
+
+print('Feature V5 Outliers for Fraud Cases: {}'.format(len(outliers)))
+print('V5 outliers:{}'.format(outliers))
+```
+
+    Quartile 25: -0.6893563175489766 | Quartile 75: 0.35258934145246884
+    iqr: 1.0419456590014455
+    Cut Off: 3.1258369770043366
+    V5 Lower: -3.815193294553313
+    V5 Upper: 3.4784263184568056
+    Feature V5 Outliers for Fraud Cases: 13
+    V5 outliers:[-4.4292409026773525, -4.54813961123235, -4.082717450164329, -5.0642982754017325, -5.191529500732111, -4.0694218066414125, -4.886395884145655, -4.677233439377554, -4.451157410726059, -4.54813961123235, -4.9370625194319615, -4.196673160286453, -4.54813961123235]
+
+Now you can remove those outliers. Remember to do this process only once, because each time you do it you’ll uncover new outliers and reduce the dataset.  
+
+Next, take a look at those values. You’ll need to iterate through all the features to remove  extreme outliers in each one. 
+
+```python
+# Let's remove the outliers
+for feature in X_train.columns.difference(['Class']):      # Loop into each feature except class
+    
+    feature_fraud = X_train[feature].loc[X_train['Class'] == 1].values
+    q25, q75 = np.percentile(feature_fraud, 25), np.percentile(feature_fraud, 75)   
+    feature_iqr = q75 - q25
+    
+    feature_cut_off = feature_iqr * 3
+    feature_lower, feature_upper = q25 - feature_cut_off, q75 + feature_cut_off
+    
+    outliers = [x for x in feature_fraud if x < feature_lower or x > feature_upper]
+
+    X_train = X_train.drop(X_train[(X_train[feature] > feature_upper) | (X_train[feature] < feature_lower)].index)
+
+print('Number of Instances after outliers removal: {}'.format(len(X_train)))
+```
+
+    Number of Instances after outliers removal: 645
