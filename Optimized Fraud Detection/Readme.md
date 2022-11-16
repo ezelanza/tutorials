@@ -743,3 +743,11 @@ print('Number of Instances after outliers removal: {}'.format(len(X_train)))
 ```
 
     Number of Instances after outliers removal: 645
+    
+As you can see, our dataset is reduced but there’s still enough to train your model. This is not a 50/50 ratio anymore. You can divide again to get 50/50 if you want. However, 57/42 is still a good ratio between FRAUD and NO FRAUD cases. 
+```python
+print('No Frauds', round(X_train['Class'].value_counts()[0]/len(X_train) * 100,2), '% of the dataset')
+print('Frauds', round(X_train['Class'].value_counts()[1]/len(X_train) * 100,2), '% of the dataset')
+```
+    No Frauds 57.98 % of the dataset
+    Frauds 42.02 % of the dataset
