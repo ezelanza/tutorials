@@ -45,7 +45,7 @@ plotter(outputDict)
 ```
 
 
-![compare](Readme_files/Main_16_1.png)
+![compare](README_files/Main_16_1.png)
 
 
 ### Dealing with missing values
