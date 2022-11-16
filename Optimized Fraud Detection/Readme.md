@@ -44,7 +44,7 @@ outputDict={"Pandas":pandas_time,"Modin":modin_time}
 plotter(outputDict)
 ```
 
-![compare](/tutorials/Optimized Fraud Detection/Readme_files/Main_16_1.png)
+![compare](tutorials/Optimized Fraud Detection/README_files/Main_16_1.png)
 
 
 ###Dealing with missing values
