@@ -55,7 +55,7 @@ Now that the dataset is loaded on your memory, take a closer look.
 
 One of the first steps in data analysis is to check for missing values, because most algorithms can’t handle missing data. This verification is a useful shorthand to see if the data is accurate. It’s important to know how large the problem is to determine how to handle it. For example, 80% missing values is evidence of a bad dataset, but not a problem when that number is closer to 5%.
 
-![missing](README_files/missing.png)
+![missing](Readme_files/missing.png)
 
 There are multiple ways to address this problem. There are no good or bad decisions, try them out and see how the algorithm performs with each.  
 
