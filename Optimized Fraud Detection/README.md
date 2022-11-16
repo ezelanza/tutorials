@@ -13,11 +13,9 @@ Note: [Modin](https://modin.readthedocs.io/en/stable/) does not currently suppor
      alt="Markdown Monster icon"
      style="float: left; margin-right: 10px;" />
 
-###Preprocessing and analysis of data
+## Section 1 : Pre-process and Initial Data Analysis
 
-The first step is to start working on preprocessing. There are some steps that have to be followed which would help us to understand our data!
-
-Let's load the dataset. We will use regular Pandas (pandas) and Modin-Pandas(pd) optimized (Because we'd like to take advantange of all the cores instead of using just 1 core!!) 
+The first step is to pre-process the data. After you download and extract the data, you’ll have it in spreadsheet format. That means you’ll work with tabular data where each row is a transaction (example) and each column is a feature (transaction amount, credit limit, age.) In this tutorial you won’t know which represents each feature, since the data has been anonymized for privacy purposes. This example uses supervised learning, meaning the algorithm is trained on a pre-defined set of examples. The examples are labeled with one column called LABEL (FRAUD or NOT FRAUD) 
 
 ```
 t0 = time.time()
@@ -34,7 +32,7 @@ outputDict={"Pandas":pandas_time,"Modin":modin_time}
 plotter(outputDict)
 ```
 
-![Pandas](/Users/emlanza/Library/CloudStorage/OneDrive-IntelCorporation/Technical/S2E/Content/Images/load_data.png)
+![Pandas](Optimized Fraud Detection/Images/features.png)
 
 ###Dealing with missing values
 
