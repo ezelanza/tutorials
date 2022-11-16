@@ -29,7 +29,7 @@ In a real-world case, the data could come from multiple sources (such as SQL, Or
 
 First, load the dataset. You’ll use both regular pandas and optimized Modin-Pandas (pd). By using both, you’ll see the difference when your device uses all of its cores instead of using just one core. This will demonstrate how Modin can help.
 
-```
+```python
 t0 = time.time()
 pandas_df = pandas.read_csv("creditcard.csv")
 pandas_time = time.time()- t0
@@ -64,7 +64,7 @@ Impute value. Simulate a value to fill in the missing field. The idea is to use 
 When you’re working with data extracted from outside sources, it’s worth factoring in system failures. These failures take the form of incomplete reporting – taking only partial snapshots of the dataset – and can result in missing values.  
 Let's check for missing values:  
 
-```
+```python
 t0 = time.time() 
 
 print(pandas_df.columns[pandas_df.isna().any()]) 
@@ -90,7 +90,7 @@ Fortunately, in this example there are no missing values, so you can move on to 
 
 Take a look at the distribution of your data. 
 
-```
+```python
 sub_sample_plot=sns.countplot(pandas_df["Class"]) 
 
 sub_sample_plot 
@@ -116,7 +116,7 @@ Now you’re ready to create a new dataset with a useful ratio for generalizing 
 
 First, create a NEW balanced dataset.  
 
-```
+```python
 modin_df_sub = modin_df.sample(frac=1)  #Shuffling the dataframe 
 
  
@@ -140,7 +140,7 @@ modin_balanced = modin_df_sub_distributed.sample(frac=1, random_state=42)
 ```
 The resulting balanced dataset makes it easier to train the algorithm. 
 
-```
+```python
 sub_sample_plot=sns.countplot(modin_balanced["Class"]) 
 
 sub_sample_plot 
@@ -182,19 +182,6 @@ X_train.describe()
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -451,19 +438,7 @@ dataset_std.describe()
 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
