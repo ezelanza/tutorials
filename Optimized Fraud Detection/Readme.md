@@ -14,8 +14,12 @@
 	4. [Outliers](#outliers)
 	5. [Feature Engineering](#fe)
 
+First of all, you should install all the dependencies.
 
-This tutorial provides a use case where a credit card company might benefit from machine learning techniques to predict fraudulent transactions. This is the first part of a three-part series.
+```python
+# Use ! if you are running this line on jupyter, or remove it if you'll be using it on your terminal.
+!pip install requirements.txt 
+```
 
 In this post, you’ll prepare and pre-process data with the [Intel® Distribution of Modin*] (https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-of-modin.html#gs.7hvt6). You’ll also use an [anonymized dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) extracted from Kaggle.
 
