@@ -3,7 +3,7 @@
 
 
 
-## Table of Contents
+# Table of Contents
 1. [Section 1 : Pre-process](#section1)
 	1.	[Check for missing values](#missing)
 	2.	[Subsampling](#sub)
@@ -22,10 +22,7 @@ In this post, you’ll prepare and pre-process data with the [Intel® Distributi
 The Intel® Distribution of Modin will help you execute operations faster using the same API as [pandas](https://pandas.pydata.org/). The library is fully compatible with the [pandas API](https://pandas.pydata.org/docs/reference/index.html). OmniSci powers the backend and provides accelerated analytics on Intel® platforms. (Here are [installation instructions](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-of-modin.html#gs.8blx9q).) 
 
 Note: [Modin](https://modin.readthedocs.io/en/stable/) does not currently support distributed execution for all methods from the pandas API. The remaining unimplemented methods are executed in a mode called “default to pandas.” This allows users to continue using Modin even though their workloads contain functions not yet implemented in Modin. 
-
-<img src="https://www.intel.com/content/dam/develop/public/us/en/images/diagrams-infographics/diagram-modin-arch-16x9.jpg.rendition.intel.web.1072.603.jpg"
-     alt="Markdown Monster icon"
-     style="float: left; margin-right: 10px;" />
+![modin](README_files/modin.png)
 
 <a name="section1"></a>
 
