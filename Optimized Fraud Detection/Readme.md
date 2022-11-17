@@ -12,9 +12,7 @@
 	4. [Outliers](#outliers)
 	5. [Feature Engineering](#fe)
 
-### This is the code for the publications done on 
-
-
+### This is a summary of publications done on open.intel
 
 This tutorial provides a use case where a credit card company might benefit from machine learning techniques to predict fraudulent transactions. This is the first part of a three-part series.
 
