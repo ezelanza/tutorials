@@ -20,6 +20,7 @@ First of all, you should install all the dependencies.
 # Use ! if you are running this line on jupyter, or remove it if you'll be using it on your terminal.
 !pip install requirements.txt 
 ```
+Let's move on now you have the dependencies installed
 
 In this post, you’ll prepare and pre-process data with the [Intel® Distribution of Modin*] (https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-of-modin.html#gs.7hvt6). You’ll also use an [anonymized dataset](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) extracted from Kaggle.
 
@@ -775,3 +776,5 @@ For example, if you know the description of each feature, suppose there are two 
 In this part, we highlighted the most important preprocessing techniques to use on a tabular data problem such as our fraud detection case.  
 
 Now your data is ready to be used to train a model (Part three.) The preprocessing and training stages are an [iterative process](https://en.wikipedia.org/wiki/Iterative_method) in which transformations performed may or may not help teach the algorithm. Remember that your goal is to have an algorithm that can work well on unseen data in the very last stage. You might have to repeat or modify this process several times to get there. 
+
+## Section 3 : Training
