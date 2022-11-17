@@ -3,9 +3,14 @@
 
 ## Table of Contents
 1. [Section 1 : Pre-process](#section1)
-2. [Example2](#example2)
-3. [Third Example](#third-example)
-4. [Fourth Example](#fourth-examplehttpwwwfourthexamplecom)
+	1.	[Check for missing values](#missing)
+	2.	[Subsampling](#sub)
+3. [Section 2 : Data transformation](#section2)
+	1.	[Split Data](#split)
+	2.	[Transformations](#trans)
+	3. [Scaling](#scaling)
+	4. [Outliers](#outliers)
+	5. [Feature Engineering](#fe)
 
 ### This is the code for the publications done on 
 
@@ -56,7 +61,7 @@ plotter(outputDict)
 ![compare](README_files/Main_16_1.png)
 
 Now that the dataset is loaded on your memory, take a closer look.
-
+<a name="missing"></a>
 ### Check for missing values
 
 One of the first steps in data analysis is to check for missing values, because most algorithms can’t handle missing data. This verification is a useful shorthand to see if the data is accurate. It’s important to know how large the problem is to determine how to handle it. For example, 80% missing values is evidence of a bad dataset, but not a problem when that number is closer to 5%.
@@ -91,7 +96,7 @@ Index([], dtype='object')
 ```
 
 Fortunately, in this example there are no missing values, so you can move on to sub-sampling. 
-
+<a name="subsampling"></a>
 ### Subsampling
 
 Take a look at the distribution of your data. 
@@ -155,13 +160,15 @@ sub_sample_plot
 
 Now you have the data necessary to demonstrate a fair representation of FRAUD and NO FRAUD examples. It should also be clear what advantages the Intel® Distribution of Modin provides — with no code changes. 
 
+<a name="section2"></a>
+
 ## Section 2 : Data transformation
 
 For this tutorial, you’ll need scikit-learn* ([sklearn](https://scikit-learn.org/stable)) It’s a very useful and robust libraries for machine learning in [Python](https://www.python.org/). It provides a selection of efficient tools for machine learning and statistical modeling including classification, regression, clustering, and dimensionality reduction through a consistent interface in Python. This library, which is largely written in Python, is built on [NumPy](https://numpy.org/), [SciPy](https://scipy.org/) and [Matplotlib](https://matplotlib.org/).  
 
 The Intel® Extension for scikit-learn offers you a way to accelerate existing scikit-learn code. The acceleration is achieved through patching: replacing the stock scikit-learn algorithms with their optimized versions provided by the extension (see the [guide](https://www.intel.com/content/www/us/en/developer/tools/oneapi/scikit-learn.html#gs.8yoqc6) That means you don’t need to learn a new library but still get the benefits of using scikit, optimized.  
 The example below will show the benefits.
-
+<a name="split"></a>
 ### Split Data
 
 A common mistake is to perform all the preprocessing transformations on the data before performing the separation between train/test/valid sub-samples. In a real-word case, the data you’ll have available is the training data while test data will be what you’re going to predict. Making the transformation before splitting means that you’ll be transforming the training data with information present in the test dataset, meaning there will be contaminated data and the results will be biased.  
@@ -171,12 +178,12 @@ How can you avoid it? Simple: by splitting the data. There are [multiple ways](h
 ![missing](README_files/split.png)
 
 In short, we could use the whole dataset to visualize it, but it needs to be split up as soon as you start working on transformations.
-
+<a name="trans"></a>
 ### Transformations 
 Now you’ll modify the data to make it easier for the algorithm to detect its behavior. These are the most common transformations, and even so they require patience. After training the model you’ll find out if these transformations were useful or not. You can train a model without any transformation, but it’s highly recommended to transform the data first. 
 
 A transformation can be understood as a modification of the data without changing its patterns. For example, if you have a feature called “age” represented in values between 0 and 100, it might be represented in groups such as young (0), adult (1), senior (2.)
-
+<a name="scaling"></a>
 ### Scaling
 It's always a good idea to scale the data to reduce the effect of data represented in value ranges. The model might skew towards those features with bigger numbers, for example if “customer seniority” is represented from 0-20 and the “transaction amount” is between 1,000 and 10,000,000, the model might weight the “transaction amount” more than customer seniority. Which might be true, but you’ll be biased if the model is trained with data in this format. 
 
@@ -671,7 +678,7 @@ dataset_std.describe()
 </div>
 
 ![png](README_files/normalized.png)
-
+<a name="outliers"></a>
 ### Outliers
 Now that the data is almost ready to train our model, there’s another important thing to check. It’s well organized now but we can still find values in the features (columns) that can affect the model as it might be the presence of an outlier. 
 
@@ -758,7 +765,7 @@ print('Frauds', round(X_train['Class'].value_counts()[1]/len(X_train) * 100,2), 
     No Frauds 57.98 % of the dataset
     Frauds 42.02 % of the dataset
     
-    
+<a name="fe"></a>
 ### Feature engineering 
  
  Lastly, there’s another important modification to make to your dataset. [Feature engineering](https://en.wikipedia.org/wiki/Feature_engineering) (FE) or means adding features that are not present and to help the algorithm detect patterns in data. Data scientists [call it](https://www.worldcat.org/title/1149291643) an art because you need to figure out which feature can be added to help and it involves deep understanding of the data. It’s a process of trial and error; don’t worry if that new feature doesn’t work when you test the results.  Auto machine learning ([AutoML](https://en.wikipedia.org/wiki/Automated_machine_learning)) [tools](https://github.com/epistasislab/tpot) can help. They automatically test parameters so you can find “optimal” feature combinations that can also be used during training.  
