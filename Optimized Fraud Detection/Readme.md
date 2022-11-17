@@ -1,5 +1,7 @@
 
-#### Use case - Fraud detection with [Intel® Distribution of Modin](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-of-modin.html#gs.7hvt6) and  [Intel® Extension for scikit-learn] (https://www.intel.com/content/www/us/en/developer/tools/oneapi/scikit-learn.html#gs.iezgox)
+#### Use case - Fraud detection with [Intel® Distribution of Modin](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-of-modin.html#gs.7hvt6) and  [Intel® Extension for scikit-learn](https://www.intel.com/content/www/us/en/developer/tools/oneapi/scikit-learn.html#gs.iezgox)
+
+
 
 ## Table of Contents
 1. [Section 1 : Pre-process](#section1)
@@ -12,7 +14,6 @@
 	4. [Outliers](#outliers)
 	5. [Feature Engineering](#fe)
 
-### This is a summary of publications done on open.intel
 
 This tutorial provides a use case where a credit card company might benefit from machine learning techniques to predict fraudulent transactions. This is the first part of a three-part series.
 
