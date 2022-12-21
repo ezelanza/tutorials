@@ -13,6 +13,12 @@
 	3. [Scaling](#scaling)
 	4. [Outliers](#outliers)
 	5. [Feature Engineering](#fe)
+3. [Section 3 : Train Your Fraud Detection Model with Intel® Extension for scikit-learn](#section3)
+	1.	[Algorithms](#algo)
+	2.	[Model 1 : Logistic Regression](#trans)
+	3. [Model 2 : Decision Trees](#scaling)
+	4. [Conclusion](#outliers)
+	5. [References](#fe)
 
 First of all, you should install all the dependencies.
 
@@ -776,5 +782,7 @@ For example, if you know the description of each feature, suppose there are two 
 In this part, we highlighted the most important preprocessing techniques to use on a tabular data problem such as our fraud detection case.  
 
 Now your data is ready to be used to train a model (Part three.) The preprocessing and training stages are an [iterative process](https://en.wikipedia.org/wiki/Iterative_method) in which transformations performed may or may not help teach the algorithm. Remember that your goal is to have an algorithm that can work well on unseen data in the very last stage. You might have to repeat or modify this process several times to get there. 
+
+<a name="section3"></a>
 
 ## Section 3 : Training
