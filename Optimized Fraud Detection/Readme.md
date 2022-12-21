@@ -814,3 +814,23 @@ In other words, recall answers this question: Of the examples that were actually
 There’s one more metric to keep in mind called the F1-Score, an average between precision and recall. You’ll get a harmonic mean, which can be useful because it represents both precision and recall represented in just one metric.
 
 ![png](README_files/accuracy.png)
+
+#### Confusion matrix
+This a table with the combinations of predicted and real values. It shows how many examples are TP, NP, FN, TN. 
+
+Now you’re ready to build your models. Depending on which algorithm and framework you're using, there are different ways to train the model. Intel optimizations can help speed them up, too. There are several approaches to consider including regression, decision trees, neural networks and support vector machines among others.  
+
+Here we’ll test regressions and decision trees and [this GitHub notebook](https://github.com/ezelanza/tutorials/blob/main/Optimized%20Fraud%20Detection/Main.ipynb) will show how Intel optimizations can help. 
+
+
+
+### Model 1: Logistic Regression
+
+Regression is a statistical method by which one variable is explained or understood on the basis of one or more variables. The variable being explained is called the dependent, or response, variable; the other variables used to explain or predict the response are called independent variables (Hilbe, 2017) 
+
+Regression is a type of supervised learning. Making the model fit can result in slow training but the prediction is fast. It can’t help in scenarios where the relationship between them is not easy to predict (complex relationships). 
+
+To understand logistic regression, you need to understand a linear regression first. 
+
+Let’s say you would like to predict the number of lines coded based on time coding (1 dependant variable) Image 2. A linear regression will find a function (blue dotted line) that can return a value (lines) when you give your input variable (hours coding), there is a multivariable regression when you have multiple dependant variables, but the concept is still the same. Linear Regression (dotted line) then will return a continuous value (number). It won’t be helpful in this Fraud detection case where you are looking to a classification of “fraud” or “not fraud”.
+![png](README_files/log_reg.png)
