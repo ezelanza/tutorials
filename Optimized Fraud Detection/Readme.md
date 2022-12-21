@@ -786,3 +786,31 @@ Now your data is ready to be used to train a model (Part three.) The preprocessi
 <a name="section3"></a>
 
 ## Section 3 : Training
+
+For this final part of the tutorial, you’ll need scikit-learn* (sklearn.) It’s the one of the most useful and robust libraries for machine learning in Python. It provides a selection of efficient tools for machine learning and statistical modeling including classification, regression, clustering, and dimensionality reduction through a consistent interface in Python. This library, largely written in Python, is built on NumPy, SciPy and Matplotlib. 
+
+The Intel® Extension for scikit-learn offers you a way to accelerate existing scikit-learn code. The acceleration is achieved through patching: replacing the stock scikit-learn algorithms with their optimized versions provided by the extension (see the guide). That means you don’t need to learn a new library but still get the benefits of using sklearn, optimized.  
+The example below will show the benefits.
+
+Which algorithm should you use? The one that best predicts your future data. That sounds simple but selecting the most advanced algorithm doesn’t mean that it will be useful on our data. It’ll be the one that gives you the best results (in test) over the metric we choose. Don’t expect a 100% accuracy because that's not a good sign: Decide in advance what would be an acceptable value (70%, 80%, 90%). Remember to consider how long it takes the algorithm to process the results. 
+
+<a name="algo"></a>
+### Algorithms
+
+Now you’ll explore two families of algorithms: logistic regression and decision trees. Before diving in, you’ll need a basic understanding of how metrics work and how they can help us to understand the behavior of the model.
+
+#### Accuracy / Precision / Recall / F1 score
+
+Each metric has advantages and disadvantages, and each of them will give you specific information on the strengths and weaknesses of your model. 
+
+Even if the words “accuracy” and "precision” have similar meanings, for artificial intelligence they are two different concepts. When you need to know the overall performance of the model, pay attention to accuracy only. This is defined as simply the fraction of correct classifications (correct classifications/all classifications). It won’t help in cases like this one, where it’s important to get a model that can detect fraud cases because it’s a metric that works to detect all correct predictions regardless of whether they are fraud or not fraud. In other words, accuracy can answer this question: Of all the classified examples (fraud and no fraud) what percentage did the model get right?  
+
+Moreover, in AI the term precision considers both true positives (TP) and false positives (FP) (TP/(TP+FP)). This will give you a ratio between hits and errors for each class for positive predictions. In other words, a precise answer to this question: Of the examples the model flags as fraud, what percentage were actually fraud?  
+
+Finally, the term “recall” differs to precision because it considers false negatives (FN) (TP/(TP+FN). It gives you more information because it also considers those examples that the model classified incorrectly as no fraud when they are fraud.   
+
+In other words, recall answers this question: Of the examples that were actually fraud, what percentage was predicted as fraud by the model? 
+
+There’s one more metric to keep in mind called the F1-Score, an average between precision and recall. You’ll get a harmonic mean, which can be useful because it represents both precision and recall represented in just one metric.
+
+![png](README_files/accuracy.png)
