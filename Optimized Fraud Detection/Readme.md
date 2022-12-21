@@ -834,3 +834,71 @@ To understand logistic regression, you need to understand a linear regression fi
 
 Let’s say you would like to predict the number of lines coded based on time coding (1 dependant variable) Image 2. A linear regression will find a function (blue dotted line) that can return a value (lines) when you give your input variable (hours coding), there is a multivariable regression when you have multiple dependant variables, but the concept is still the same. Linear Regression (dotted line) then will return a continuous value (number). It won’t be helpful in this Fraud detection case where you are looking to a classification of “fraud” or “not fraud”.
 ![png](README_files/log_reg.png)
+
+Then, you’ll use Logistic Regression (image 3). It will give you “true” and “false” values (fraud or not fraud). Instead of fitting a line, logistic regression fits an “S” shape which corresponds to a probability value of being “true,” in other words a value between 0 and 1 where the model will consider “true” if it’s higher than 0.5.
+
+To classify, start from an input value marked in green (X-axis), and a line is drawn up to the intersection with the blue line (log reg), with the value in Y-axis as the result for that value. Because the match here is less than 0.5 (0.41) it will be labeled as "fraud." You can calculate all the test values using the same procedure. This is done automatically when you ask the model to "label" your cases.
+
+![png](README_files/log_reg_2.png)
+
+#### Train
+You’ll start training the model, using sklearn API “[fit](https://scikit-learn.org/stable/developers/develop.html)”. It will train the model with X (train data without labels) and y (labels of train data). Pretty straightforward.
+
+```python
+clf = LogisticRegression(random_state=0).fit(X, y)
+```
+
+#### Performance in TRAIN
+Once the model is trained, you can take a better look at its performance and start predicting the labels for the “train” dataset. Note: sklearn will provide you with the label (1 or 0), you can use predict.proba  to see the probabilities.
+
+```python
+y_pred= clf.predict(X)     # It will give the  
+
+target_names = ["FRAUD","NO FRAUD"] 
+
+ 
+print(classification_report(y, y_pred,target_names=target_names)) 
+
+```
+![png](README_files/train_1.png)
+As you can see, it’s at 95% percent accuracy. It means that the model can correctly identify most of the examples. Since our goal is to have a model capable of generalizing on unseen data, you can imagine that high levels of accuracy in training is related to good results, right? 
+
+However, that's not the case. High levels of accuracy in training means that the model has a perfect understanding of the data provided (train). Test cases are not necessarily equal to train examples -- the accuracy there could drop from 95% in training to ~50% in test.  
+
+For example, if you’re building a model to detect cows and you get the 100% accuracy in train, when you move to test it won’t be able to detect a slightly different cow, your model is not able to generalize. Known as "overfitting,” there are multiple ways to avoid it. Random samples, equally distributed datasets, cross-validation, early stopping or regularization between other techniques are useful. 
+
+Note: It’s a good thing when you get high levels of accuracy in "test" (inference)!
+
+```python 
+## Confusion matrix 
+
+from sklearn.metrics import plot_confusion_matrix 
+
+ 
+
+#y_pred = clf.predict(X) 
+
+plot_confusion_matrix(clf,X, y) 
+```
+![png](README_files/confu.png)
+
+#### Performance in TEST
+This next step is known as inference.  Now that you’ve trained the algorithm trained, you need to verify the performance on unseen data. You’ll test with the same metrics you did for training, but it's time to start thinking about how this model will perform in your solution. For example: Will the implementation consist of thousands of inferences at the same time? In that case, you’ll have pay attention to the time the algorithm takes to give you the result (fraud vs no fraud), you will probably choose the algorithm that gives you the result faster, normally combined with analysis of the hardware and software optimizations available.
+
+```python 
+test_pred=clf.predict(test)  
+
+ 
+target_names = ["FRAUD","NO FRAUD"] 
+
+ 
+print(classification_report(y_test, test_pred,target_names=target_names))
+```
+![png](README_files/accuracy_2.png)
+
+```python
+plot_confusion_matrix(clf,test, y_test)
+```
+![png](README_files/confu_2.png)
+As you can see there’s a drop in metrics results when making the inference. It’s still a good predictor but it makes mistakes, and you should evaluate how important are those mistakes are overall. As a guideline, a model with 85% precision on fraud cases is not bad at all.
+####
