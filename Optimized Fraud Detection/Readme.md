@@ -900,5 +900,59 @@ print(classification_report(y_test, test_pred,target_names=target_names))
 plot_confusion_matrix(clf,test, y_test)
 ```
 ![png](README_files/confu_2.png)
+
 As you can see there’s a drop in metrics results when making the inference. It’s still a good predictor but it makes mistakes, and you should evaluate how important are those mistakes are overall. As a guideline, a model with 85% precision on fraud cases is not bad at all.
-####
+### Model 2 : Decision Trees
+
+A decision tree is a type of supervised learning. A decision tree can help you decide a question like: “Is this a good day to code?” The inputs could be factors such as time of day, external noise, and hours coding. The algorithm will find in the training data the best split to classify if it’s a good day to code or it doesn’t. The result might look like the following:
+![png](README_files/dt.png)
+The concept was first introduced by Leo Breiman in 1984 (Breiman, 2017). Here you'll use [Random Forests](https://www.stat.berkeley.edu/~breiman/RandomForests) which is a decision tree-based algorithm that builds several trees while training and selects the best to use. [XGboost](https://xgboost.ai/) or [LightGBM](https://lightgbm.readthedocs.io/en/v3.3.2), and many others share the same concept behind with different approaches and techniques to build the decision trees.
+
+Decision trees can give a very intuitive explanation about how the decisions were made. Keep in mind, though, that it might be inadequate when you’re looking to predict continuous values.
+#### TRAIN
+There are multiple parameters you can use to train your [Random Forest algorithm](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html). Here we’re using a “classifier” to fine tune it. In this case, you’ll keep it as simple as possible to get decent results. Start with a different max_depth value. You’re defining the depth of the decisions tree (longer can be better but could overfit the model.) Here you’ll use six, but you can try with different values to see how performance changes.
+```python 
+clf = RandomForestClassifier(max_depth=6, random_state=0) 
+
+clf.fit(X, y)
+```
+
+#### Performance in TRAIN
+Check the performance in train. The results seem slightly better than logistic regression.
+```python
+y_pred_RF= clf.predict(X) 
+
+target_names = ["FRADUD","NO FRAUD"] 
+
+ 
+print(classification_report(y, y_pred_RF,target_names=target_names)) 
+```
+
+
+![png](README_files/acu_3.png)
+
+#### Performance in test (inference):
+
+```python
+test_pred_RF=clf.predict(test)  
+
+target_names = ["FRAUD","NO FRAUD"] 
+
+print(classification_report(y_test, test_pred_RF,target_names=target_names)) 
+```
+
+
+![png](README_files/acu_4.png)
+After training two simple models you can expect decent performance (in test) on both.
+
+
+### Conclusion
+In this tutorial, you’ve trained a model to detect possible fraudulent transactions with a few different models. The tutorial covered the main concepts around how to train a model that can be used to detect fraud, you’ve prepared/transformed the data and you’ve selected some algorithms to train it.  
+With these results, you can now decide which model to use based on metrics, keeping in mind that execution time is an important topic when implementing the algorithm. Your model is almost ready to implement in your application. The next step is to optimize container packing (more on that [here](https://www.intel.com/content/www/us/en/developer/tools/oneapi/application-catalog/full-catalog/ai-optimization-tool-for-container-packing.html), then integrate it into your solution to take advantage of the insights the model will give you.  
+
+The model you trained in this tutorial can potentially save your company time and money by proactively spotting transaction fraud. A recent Gartner [report](https://www.gartner.com/en/newsroom/press-releases/2022-05-24-gartner-identifies-three-technology-trends-gaining-tr) notes the uptick of banks using AI in growth areas such as fraud detection, trading prediction and risk factor modeling.  
+
+### References
+Breiman, L. (2017). Classification and regression trees. Routledge. 
+
+Hilbe, J. M. (2017). Logistic Regression Models. Taylor & Francis Ltd. 
